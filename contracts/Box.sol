@@ -99,6 +99,7 @@ contract Box {
     function apply_for_loan(string memory farmer_id,uint amount) public {
         if (amount%10==0 && amount>0) {
             loan_requests.push(Loan_Request(loan_request_count,farmer_id,amount,false,false));
+            loan_request_count+=1;
         }
     }
 

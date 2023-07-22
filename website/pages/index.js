@@ -60,11 +60,21 @@ export default function Home(props) {
     };
     const [is_uploading,setIs_Uploading]=useState(false)
     const [logged_in,setLogged_In]=useState("loading")
+    const [search,setSearch]=useState("")
     const router=useRouter()
     if (session) {} else{ return (
-        <Button onClick={()=>{
-            signIn("google")
-        }}>Sign-In</Button>
+        <div className="div_center">
+        <Card css={{p:"$5","w":"500px"}}>
+            <Card.Header>
+                <Text h2 className="vertical" css={{width:"100%"}}>Sign-In to proceed</Text>
+            </Card.Header>
+            <Card.Body>
+            <Button onClick={()=>{
+                signIn("google")
+            }}>Sign-In with Google</Button>
+            </Card.Body>
+        </Card>
+        </div>
     )}
     function refresh_farmers() {
         axios.get(props.apiurl+"/farmers").then((x)=>{
@@ -128,7 +138,9 @@ export default function Home(props) {
                 }}>Add Farmer</Button>
                 </div>
                 </Row>
-                <Input placeholder="Search Farmer" width={250+70}></Input>
+                <Input placeholder="Search Farmer" onChange={(x)=>{
+                    setSearch(x.target.value.replaceAll(" ","").toLowerCase())
+                }} width={250+70}></Input>
                 <Spacer y></Spacer>
                 <Table
                 bordered
@@ -150,6 +162,9 @@ export default function Home(props) {
                 </Table.Header>
                 <Table.Body>
                     {farmers.map((x)=>{
+                        if (!JSON.stringify(x).replaceAll(" ","").toLowerCase().includes(search)) {
+                            return
+                        }
                         return (
                             <Table.Row>
                                 <Table.Cell>
@@ -323,7 +338,7 @@ export default function Home(props) {
                     <Input bordered placeholder="Loan ID" id="submit_loanid"></Input>
                 </Modal.Body>
                 <Modal.Footer>
-                <Button auto flat color="error" id="close_modal_4" onPress={() => setVisible3(false)}>
+                <Button auto flat color="error" id="close_modal_4" onPress={() => setVisible4(false)}>
                     Close
                 </Button>
                 <Loading color="primary" id="loan_settle_spinner_loader" css={{display:"none"}}></Loading>

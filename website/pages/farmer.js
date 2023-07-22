@@ -65,6 +65,20 @@ export default function Home(props) {
     const handleRating = (rate) => {
         setRating(rate)
     }
+    if (session) {} else{ return (
+        <div className="div_center">
+        <Card css={{p:"$5","w":"500px"}}>
+            <Card.Header>
+                <Text h2 className="vertical" css={{width:"100%"}}>Sign-In to proceed</Text>
+            </Card.Header>
+            <Card.Body>
+            <Button onClick={()=>{
+                signIn("google")
+            }}>Sign-In with Google</Button>
+            </Card.Body>
+        </Card>
+        </div>
+    )}
     var id=router.query.id
     function refresh_farmer_details() {
         if (id==undefined) {
@@ -88,6 +102,13 @@ export default function Home(props) {
                 </div>
     } else if (logged_in==false) {
         return login_page(registration_state,setRegistration_State,session,props.apiurl)
+    }
+    function sum(arr) {
+        var result = 0, n = arr.length || 0;
+        while(n--) {
+            result += +arr[n];
+        }
+        return result;
     }
     console.log(farmer_details)
     return (
@@ -113,7 +134,7 @@ export default function Home(props) {
             <div className="wrapper">
             <img src="farmer.svg" style={{width:"80%"}}></img>
             </div>
-            <Text h2 className="vertical">Aarav Dayal</Text>
+            <Text h2 className="vertical">{farmer_details.name}</Text>
             <Spacer y={2.25}></Spacer>
             <div style={{marginLeft:"2vw",marginRight:"2vw",marginTop:"2vw"}}>
                 <Row css={{width:"100%"}}>
@@ -138,7 +159,7 @@ export default function Home(props) {
                 <Spacer></Spacer>
                 {Stats({"title":"Average Order Size","body":farmer_details.order_sizes})}
                 <Spacer></Spacer>
-                {Stats({"title":"Active Since (days)","body":1})}
+                {Stats({"title":"Unpaid Loan","body":sum(farmer_details.pending_loans)})}
                 </Row>
                 <Row>
                 <Spacer></Spacer>

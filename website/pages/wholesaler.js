@@ -31,6 +31,7 @@ export default function Home(props) {
         }
     };
     const [is_uploading,setIs_Uploading]=useState(false)
+    const [search,setSearch]=useState("")
     const [selected_trade,setSelectedTrade]=useState({
         "id":0,
         "farmer_id":"1",
@@ -45,9 +46,18 @@ export default function Home(props) {
     })
     const router=useRouter()
     if (session) {} else{ return (
-        <Button onClick={()=>{
-            signIn("google")
-        }}>Sign-In</Button>
+        <div className="div_center">
+        <Card css={{p:"$5","w":"500px"}}>
+            <Card.Header>
+                <Text h2 className="vertical" css={{width:"100%"}}>Sign-In to proceed</Text>
+            </Card.Header>
+            <Card.Body>
+            <Button onClick={()=>{
+                signIn("google")
+            }}>Sign-In with Google</Button>
+            </Card.Body>
+        </Card>
+        </div>
     )}
     function refresh_trades() {
         axios.get(props.apiurl+"/trades").then((x)=>{
@@ -90,7 +100,9 @@ export default function Home(props) {
                 <Text h1 css={{float:"left",width:"50%"}}>Welcome {session.user.name.split(" ")[0]}</Text>
                 <Text h1 css={{float:"left",width:"50%"}}>Balance: ${logged_in.balance}</Text>
                 </Row>
-                <Input placeholder="Search Deal" width={250+70}></Input>
+                <Input placeholder="Search Deal" onChange={(x)=>{
+                    setSearch(x.target.value.replaceAll(" ","").toLowerCase())
+                }} width={250+70}></Input>
                 <Spacer y></Spacer>
                 <Table
                 bordered
@@ -113,6 +125,9 @@ export default function Home(props) {
                 </Table.Header>
                 <Table.Body>
                     {trades.map((x)=>{
+                        if (!JSON.stringify(x).replaceAll(" ","").toLowerCase().includes(search)) {
+                            return
+                        }
                         var farmer_id=x[0]
                         var trade_id=x[6]
                         return (
