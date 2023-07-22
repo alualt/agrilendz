@@ -11,7 +11,8 @@ const theme = createTheme({
 			text: '#fff',
 			// you can also create your own color
 			myDarkColor: '#ff4ecd',
-			"primary":"#01c205"
+			"primary":"#01c205",
+			"error":"red"
 			// ...  more colors
 		  },
 		  space: {},

@@ -1,4 +1,0 @@
-await box.retrieve()
-const box = await Box.attach("0x343F69cC115Cc3aF1cd051756F00DE10526C693C")
-const Box = await ethers.getContractFactory('Box');
-exit
