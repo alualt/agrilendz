@@ -249,17 +249,11 @@ body {
   font-size: 7vh;
 }
 
-.glow {
-  display: inline-block;
-  color: #209ce4;
-  border: #209ce4 0.125em solid;
-  padding: 0.25em 1em;
+.glow:hover {
+  border: #01c205 0.125em solid;
 
-  text-shadow: 0 0 0.125em hsl(0 0% 100% / 0.3), 0 0 0.45em currentColor;
-
-  box-shadow: inset 0 0 0.5em 0 #209ce4, 0 0 0.5em 0 #209ce4;
+  box-shadow: inset 0 0 0.5em 0 #01c205, 0 0 0.5em 0 #01c205;
   border-radius: 1vh;
-  opacity: 0;
 }
 
 .glow2 {

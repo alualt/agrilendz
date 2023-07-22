@@ -21,9 +21,16 @@ export default function Home(props) {
     const [visible, setVisible] = React.useState(false);
     const [farmers,setFarmers]=useState([])
     const [first_load,setFirstLoad]=useState(true)
-    const handler = () => setVisible(true);
     const closeHandler = () => {
+        if (!is_uploading) {
         setVisible(false);
+        }
+    };
+    const [visible2, setVisible2] = React.useState(false);
+    const closeHandler2 = () => {
+        if (!is_uploading) {
+        setVisible(false);
+        }
     };
     const [is_uploading,setIs_Uploading]=useState(false)
     if (session) {} else{ return (
@@ -62,7 +69,9 @@ export default function Home(props) {
                 <Text h1 css={{float:"left",width:"50%"}}>Welcome {session.user.name.split(" ")[0]}</Text>
 
                 <div style={{float:"right",width:"50%",marginTop:"1.25vh",  display: "flex","align-items": "right","justify-content": "right"}}>
-                <Button>Add Quality Entry</Button>
+                <Button onClick={()=>{
+                    setVisible2(true)
+                }}>Add Quality Entry</Button>
                 <Spacer></Spacer>
                 <Button onClick={()=>{
                     setVisible(true)
@@ -146,6 +155,45 @@ export default function Home(props) {
                     setIs_Uploading(false)
                     setVisible(false)
                     refresh_farmers()
+                }
+                }>
+                    Submit
+                </Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal
+            scroll
+            width="600px"
+            aria-labelledby="modal-title"
+            aria-describedby="modal-description"
+            open={visible2}
+            onClose={closeHandler2}
+            >
+                <Modal.Header>
+                <Text h1 id="modal-title">
+                    Add Quality Entry
+                </Text>
+                </Modal.Header>
+                <Modal.Body>
+                    <Input bordered placeholder="Farmer ID" id="submit_id"></Input>
+                    <Input bordered placeholder="Name of produce" id="submit_produce"></Input>
+                    <Input bordered placeholder="Weight / grain in mg" id="submit_weight"></Input>
+                    <Input bordered placeholder="Size in mm" id="submit_size"></Input>
+                    <Input bordered placeholder="Hardness" id="submit_hardness"></Input>
+                    <Input bordered placeholder="Quantity in Kg" id="submit_quantity"></Input>
+                </Modal.Body>
+                <Modal.Footer>
+                <Button auto flat color="error" onPress={() => setVisible2(false)}>
+                    Close
+                </Button>
+                {(is_uploading) ? <Loading color="primary"></Loading> : ""}
+                <Button auto onPress={async () => 
+                {
+                    setIs_Uploading(true)
+                    console.log((await axios.get(props.apiurl+"/upload_quality?id="+document.getElementById("submit_id").value+"&weight="+encodeURIComponent(document.getElementById("submit_weight").value)+"&hardness="+encodeURIComponent(document.getElementById("submit_hardness").value)+"&size="+encodeURIComponent(document.getElementById("submit_size").value)+"&quantity="+encodeURIComponent(document.getElementById("submit_quantity").value)+"&produce="+encodeURIComponent(document.getElementById("submit_produce").value))).data)
+                    setIs_Uploading(false)
+                    setVisible2(false)
                 }
                 }>
                     Submit

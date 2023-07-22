@@ -1,6 +1,8 @@
 from web3 import providers,Web3
-import os,json,time,flask,web3
+import os,json,time,flask,web3,threading
 from flask import Flask,request
+
+secret=json.loads(open("secret.json").read())
 
 app=Flask(__name__)
 
@@ -17,6 +19,18 @@ abi=abi[list(abi.keys())[0]]["abi"]
 
 def get_contract_address():
     return open("contract_hash").read()
+
+def send_message(to,body):
+    from twilio.rest import Client
+    account_sid = secret["account_sid"]
+    auth_token = secret["auth_token"]
+    client = Client(account_sid, auth_token)
+    message = client.messages \
+        .create(
+            body=body,
+            from_='+19123729455',
+            to=to
+        )
 
 def call_func(name,args=[]):
     contract_address=get_contract_address()
@@ -57,11 +71,42 @@ def make_response(data):
 def upload():
     args=dict(request.args)
     call_func("add_farmer",[args["name"],args["id"],args["phonenumber"],args["region"]])
+    threading.Thread(target=send_message,args=(args["phonenumber"],f"Hello {args['name']}. Your account has been successfully registered with ID : {args['id']} in the {args['region']} region.")).start()
     return make_response(args)
+
+def find_linear_match(value,best):
+    difference=best-value
+    if difference<0:
+        return 5
+    else:
+        return int(round(1-(difference/best),2)*5)
+
+def find_quality_index(weight,hardness,size):
+    weight=find_linear_match(weight,65)
+    hardness=find_linear_match(hardness,5)
+    size=find_linear_match(size,7)
+    return int((weight+hardness+size)/3)
+
+def get_price(quality_index,base_price):
+    return base_price*(quality_index/5)
+
+@app.get("/upload_quality")
+def upload_quality():
+    args=dict(request.args)
+    quality_index=find_quality_index(int(args["weight"]),int(args["hardness"]),int(args["size"]))
+    call_func("add_trade",[args["id"],int(args["weight"]),int(args["hardness"]),int(args["size"]),int(args["quantity"]),quality_index,args["produce"]])
+    res=local_call("get_all_farmers")
+    farmer=None
+    for x in res:
+        if x[1]==args["id"]:
+            to=x[2]
+            farmer=x[0]
+    threading.Thread(target=send_message,args=(to,f"Hello {farmer}. Here is the latest quality report of your produce: \nSize: {args['size']} mm \nWeight Per Grain: {args['weight']} mg \nHardness: {args['hardness']} / 5 \nOverall Quality Index: {quality_index} / 5\nEstimated Price Per Unit: {get_price(quality_index,25)}. \nSince your quality index meets the minimum requirements, your trade has been openly listed to wholesalers!")).start()
+    return make_response(True)
 
 @app.get("/farmers")
 def farmers_list():
-    res=local_call("get_farmers")
+    res=local_call("get_all_farmers")
     i=0
     for x in res.copy():
         res[i]=list(res[i])
