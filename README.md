@@ -40,10 +40,10 @@ Now open the secret.json file in a code editor and paste the following json in i
 ```json
 {
     "privateKey": "",
+    "publicAddress": "",
     "twilio_account_sid":"",
     "twilio_auth_token":"",
     "twilio_number":"",
-    "publicAddress": "",
     "mongo_url":"",
     "mongo_username":"",
     "mongo_password":""
