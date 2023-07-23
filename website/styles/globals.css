@@ -205,20 +205,15 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 1.5vh;
+  display: none;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: grey;
-  border-radius: 1vw;
-  margin-top: 1vh;
-  margin-bottom: 1vh;
-  
+  display: none;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(#2977f5,#209ce4);
-  border-radius: 1vw;
+  display: none;
 }
 
 :root {

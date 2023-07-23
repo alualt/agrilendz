@@ -19,6 +19,7 @@ import axios from "axios";
 import { login_page } from "../components/login"
 import { useRouter } from "next/router";
 import { unauthorized_access } from "../components/unauthorized_access";
+import Lenis from '@studio-freight/lenis'
 
 export default function Home(props) {
     const [registration_state,setRegistration_State]=useState({"agent":false,"wholesaler":false,"bank":false})
@@ -90,6 +91,13 @@ export default function Home(props) {
     if (!logged_in.wholesaler) {
         return unauthorized_access()
     }
+    const lenis = new Lenis()
+    function raf(time) {
+        lenis.raf(time)
+        requestAnimationFrame(raf)
+    }
+    
+    requestAnimationFrame(raf)
     return (
         <div className="hidden">
             <Head>
@@ -120,7 +128,7 @@ export default function Home(props) {
                 <div style={{width:"70vw"}}>
                 <Row css={{width:"150%"}} className="nomargin">
                 <Text h1 css={{float:"left",width:"50%"}}>Welcome {session.user.name.split(" ")[0]}</Text>
-                <Text h1 css={{float:"left",width:"50%"}}>Balance: ${logged_in.balance}</Text>
+                <Text h1 css={{float:"left",width:"80%"}}>Wholesaler's Balance: ${logged_in.balance}</Text>
                 </Row>
                 <Input placeholder="Search Deal" onChange={(x)=>{
                     setSearch(x.target.value.replaceAll(" ","").toLowerCase())
@@ -210,6 +218,7 @@ export default function Home(props) {
                     <Text h3>Quality Index: {selected_trade.quality_index} / 5</Text>
                     <Text h3>Price: ${selected_trade.price} per unit</Text>
                     <Text h3>Total Cost: ${selected_trade.price*selected_trade.quantity} per unit</Text>
+                    <Text h3>Transporation: Provided by Wholesaler</Text>
                 </Modal.Body>
                 <Modal.Footer>
                 <Button auto flat color="error" id="close_btn" onPress={() => setVisible(false)}>

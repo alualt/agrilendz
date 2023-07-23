@@ -20,6 +20,7 @@ import axios from "axios";
 import { login_page } from "../components/login"
 import { unauthorized_access } from "../components/unauthorized_access";
 import { useRouter } from "next/router";
+import Lenis from '@studio-freight/lenis'
 
 export default function Home(props) {
     const { data: session } = useSession()
@@ -106,6 +107,13 @@ export default function Home(props) {
     if (!logged_in.agent) {
         return unauthorized_access()
     }
+    const lenis = new Lenis()
+    function raf(time) {
+        lenis.raf(time)
+        requestAnimationFrame(raf)
+    }
+    
+    requestAnimationFrame(raf)
     return (
         <div className="hidden">
             <Head>
@@ -289,7 +297,7 @@ export default function Home(props) {
                     document.getElementById("quality_submit_button").style.display="block"
                     document.getElementById("close_modal_2").style.display="block"
                     setIs_Uploading(false)
-                    setVisible4(false)
+                    setVisible2(false)
                 }
                 }>
                     Submit
@@ -370,7 +378,7 @@ export default function Home(props) {
                     document.getElementById("loan_settle_button").style.display="block"
                     document.getElementById("close_modal_4").style.display="block"
                     setIs_Uploading(false)
-                    setVisible3(false)
+                    setVisible4(false)
                 }
                 }>
                     Submit

@@ -1,6 +1,7 @@
 from pymongo.mongo_client import MongoClient
 import pymongo,time,json
-uri = f"mongodb+srv://agrilendz:agrilendz123@agrilendz.k2yzdwc.mongodb.net/?retryWrites=true&w=majority"
+secret=json.loads(open("secret.json").read())
+uri = f"mongodb+srv://{secret['mongo_username']}:{secret['mongo_password']}@{secret['mongo_url']}/?retryWrites=true&w=majority"
 
 client = MongoClient(uri)
 

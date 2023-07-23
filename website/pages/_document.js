@@ -10,7 +10,7 @@ class MyDocument extends Document {
       styles: React.Children.toArray([initialProps.styles]),
     };
   }
-
+  
   render() {
     return (
       <Html lang="en">

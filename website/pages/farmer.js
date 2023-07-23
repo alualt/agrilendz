@@ -18,6 +18,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { login_page } from "../components/login"
 import { useRouter } from "next/router";
+import Lenis from '@studio-freight/lenis'
 
 const Stats = ({ title, body,secret_msg,isPressable,onClick }) => {
     return (
@@ -117,6 +118,13 @@ export default function Home(props) {
         return result;
     }
     console.log(farmer_details)
+    const lenis = new Lenis()
+    function raf(time) {
+        lenis.raf(time)
+        requestAnimationFrame(raf)
+    }
+    
+    requestAnimationFrame(raf)
     return (
         <div className="hidden">
             <Head>
@@ -176,7 +184,7 @@ export default function Home(props) {
                 <Spacer></Spacer>
                 {Stats({"title":"Average Order Size","body":farmer_details.order_sizes})}
                 <Spacer></Spacer>
-                {Stats({"title":"Unpaid Loan","body":sum(farmer_details.pending_loans)})}
+                {Stats({"title":"Unpaid Loan","body":"$"+`${sum(farmer_details.pending_loans)}`})}
                 </Row>
                 <Row>
                 <Spacer></Spacer>
@@ -194,7 +202,7 @@ export default function Home(props) {
                 <Spacer></Spacer>
                 {Stats({"title":"Total Orders","body":farmer_details.total_orders})}
                 <Spacer></Spacer>
-                {Stats({"title":"Balance","body":farmer_details.balance})}
+                {Stats({"title":"Balance","body":"$"+`${farmer_details.balance}`})}
                 <Spacer></Spacer>
                 {Stats({"title":"Overall Rating","body":`${farmer_details.ratings} / 5`,"secret_msg":"Click to rate","isPressable":true,"onClick":()=>{
                     setVisible(true)

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@nextui-org/react": "^1.0.0-beta.10",
+    "@studio-freight/lenis": "^1.0.19",
     "axios": "^1.4.0",
     "next": "12.3.0",
     "next-auth": "^4.17.0",

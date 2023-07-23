@@ -2,7 +2,7 @@
 require('@nomiclabs/hardhat-ethers');
 
 // 2. Import your private key from your pre-funded Moonbase Alpha testing account
-const { privateKey } = require('./secrets.json');
+const { privateKey } = require('./secret.json');
 
 module.exports = {
   // 3. Specify the Solidity version

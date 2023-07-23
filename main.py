@@ -8,8 +8,8 @@ app=Flask(__name__)
 
 provider=providers.rpc.HTTPProvider("https://rpc.api.moonbase.moonbeam.network")
 w3=Web3(provider)
-caller = "0xd16C18c0262F5e159a8EBcc5dac86bAE72038c48"
-private_key="e4394b0bf6d0fb1be14e50ef91d753ed2ca0a5f0a67e2d64dbf2c2ac2bdb33cc"
+caller = json.loads(open("secret.json").read())["publicAddress"]
+private_key=json.loads(open("secret.json").read())["privateKey"]
 Chain_id = w3.eth.chain_id
 info=os.listdir("artifacts/build-info/")[0]
 abi=json.loads(open("artifacts/build-info/"+info).read())
@@ -24,13 +24,13 @@ def get_contract_address():
 
 def send_message(to,body):
     from twilio.rest import Client
-    account_sid = secret["account_sid"]
-    auth_token = secret["auth_token"]
+    account_sid = secret["twilio_account_sid"]
+    auth_token = secret["twilio_auth_token"]
     client = Client(account_sid, auth_token)
     message = client.messages \
         .create(
             body=body,
-            from_='+19123729455',
+            from_=secret['twilio_number'],
             to=to
         )
 
@@ -55,7 +55,10 @@ def call_func(name,args=[]):
     call_function=new_locals["call_function"]
     tx_create = w3.eth.account.sign_transaction(call_function, private_key)
     tx_hash = w3.eth.send_raw_transaction(tx_create.rawTransaction)
-    tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+    try:
+        tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+    except web3.exceptions.TimeExhausted:
+        return
     return tx_hash
 
 def local_call(name,args=[]):
@@ -225,7 +228,7 @@ def farmer_details():
         "order_volumes":sum(farmer_stats[7]),
         "total_orders":len(farmer_stats[7]),
         "balance":local_call("get_balance",[farmer_stats[1]]),
-        "ratings":average(farmer_stats[8]),
+        "ratings":round(average(farmer_stats[8]),1),
         "trades":[sort_trade(x) for x in farmer_stats[9]],
         "pending_loans":[x["amount"] for x in farmer_loans if x["paid"]==False],
         "paid_loans":len([x["amount"] for x in farmer_loans if x["paid"]==True])
@@ -242,7 +245,32 @@ def trade_details():
 @app.get("/rate")
 def rate():
     args=dict(request.args)
-    call_func("add_rating",[args["id"],int(args["rating"])])
+    args["rating"]=int(args["rating"])
+    if args["rating"]>5:
+        args["rating"]=5
+    elif args["rating"]<0:
+        args["rating"]=0
+    call_func("add_rating",[args["id"],])
+    farmer_stats=local_call("get_farmer",[args["id"]])
+    farmer_stats={
+        "name":farmer_stats[0],
+        "farmer_id":farmer_stats[1],
+        "number":farmer_stats[2],
+        "region":farmer_stats[3],
+        "index":farmer_stats[4],
+        "aqi":average(farmer_stats[5]),
+        "order_sizes":average(farmer_stats[6]),
+        "order_volumes":sum(farmer_stats[7]),
+        "total_orders":len(farmer_stats[7]),
+        "balance":local_call("get_balance",[farmer_stats[1]]),
+        "ratings":round(average(farmer_stats[8]),1),
+        "trades":[sort_trade(x) for x in farmer_stats[9]]
+    }
+    if args["rating"]>=4:
+        msg="Congratulations"
+    else:
+        msg="Hello"
+    threading.Thread(target=send_message,args=(farmer_stats["number"],f"{msg} {farmer_stats['name']}!\nSomeone has rated you {args['rating']} / 5 stars!\nThese ratings will now reflect on your page.\nCurrent Rating: {farmer_stats['ratings']}")).start()
     return make_response(True)
 
 @app.get("/buy")
@@ -262,11 +290,11 @@ def buy():
         "order_volumes":sum(farmer_stats[7]),
         "total_orders":len(farmer_stats[7]),
         "balance":local_call("get_balance",[farmer_stats[1]]),
-        "ratings":average(farmer_stats[8]),
+        "ratings":round(average(farmer_stats[8]),1),
         "trades":[sort_trade(x) for x in farmer_stats[9]]
         }
     call_func("remove_trade",[int(args["id"]),args["email"]])
-    threading.Thread(target=send_message,args=(farmer_stats["number"],f"Congratulations {farmer_stats['name']}!\nAn order has been placed for {new_trade_data['quantity']} Kg of {new_trade_data['produce']} at the price of ${new_trade_data['price']} per unit.\nTotal order amount: ${new_trade_data['quantity']*new_trade_data['price']}")).start()
+    threading.Thread(target=send_message,args=(farmer_stats["number"],f"Congratulations {farmer_stats['name']}!\nAn order has been placed for {new_trade_data['quantity']} Kg of {new_trade_data['produce']} at the price of ${new_trade_data['price']} per unit.\nKindly keep the order ready within one week of time.\nThe transportation will be provided by the Wholesaler.\nTotal order amount: ${new_trade_data['quantity']*new_trade_data['price']}")).start()
     return make_response(True)
 
 @app.get("/apply_for_loan")
@@ -286,7 +314,7 @@ def apply_for_loan():
         "order_volumes":sum(farmer_stats[7]),
         "total_orders":len(farmer_stats[7]),
         "balance":local_call("get_balance",[farmer_stats[1]]),
-        "ratings":average(farmer_stats[8]),
+        "ratings":round(average(farmer_stats[8]),1),
         "trades":[sort_trade(x) for x in farmer_stats[9]]
         }
     threading.Thread(target=send_message,args=(farmer_stats["number"],f"Congratulations {farmer_stats['name']}!\nYour loan request for ${args['amount']} has been successfully listed and is currently waiting for approval. \nThe money will be credit in your account once it has been approved by the bank.")).start()
@@ -346,7 +374,7 @@ def approve_loan():
         "order_volumes":sum(farmer_stats[7]),
         "total_orders":len(farmer_stats[7]),
         "balance":local_call("get_balance",[farmer_stats[1]]),
-        "ratings":average(farmer_stats[8]),
+        "ratings":round(average(farmer_stats[8]),1),
         "trades":[sort_trade(x) for x in farmer_stats[9]]
         }
     threading.Thread(target=send_message,args=(farmer_stats["number"],f"Congratulations {farmer_stats['name']}!\nYour loan has been granted to you! \nThe money has been credited in your account.\nLoan ID: {int(local_call('get_loan_count'))-1}\nDo not lose your Loan ID as it will be required to settle the Loan.\nCurrent balance: {farmer_stats['balance']}")).start()
@@ -370,7 +398,7 @@ def disapprove_loan():
         "order_volumes":sum(farmer_stats[7]),
         "total_orders":len(farmer_stats[7]),
         "balance":local_call("get_balance",[farmer_stats[1]]),
-        "ratings":average(farmer_stats[8]),
+        "ratings":round(average(farmer_stats[8]),1),
         "trades":[sort_trade(x) for x in farmer_stats[9]]
         }
     threading.Thread(target=send_message,args=(farmer_stats["number"],f"Hello {farmer_stats['name']}!\nWe are sorry to inform you that your loan request of ${loan_request[2]} has been rejected by the bank.\nThis could have been due to several reason like low yield, low quality index, pending loans etc.\nCurrent balance: {farmer_stats['balance']}")).start()
@@ -395,7 +423,7 @@ def settle_loan():
         "order_volumes":sum(farmer_stats[7]),
         "total_orders":len(farmer_stats[7]),
         "balance":local_call("get_balance",[farmer_stats[1]]),
-        "ratings":average(farmer_stats[8]),
+        "ratings":round(average(farmer_stats[8]),1),
         "trades":[sort_trade(x) for x in farmer_stats[9]]
         }
     threading.Thread(target=send_message,args=(farmer_stats["number"],f"Congratulation {farmer_stats['name']}! You have settled your Loan of ${amount} successfully!\nLoan ID: {args['id']}\nCurrent Balance: ${farmer_stats['balance']}")).start()

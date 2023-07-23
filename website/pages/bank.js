@@ -19,6 +19,7 @@ import axios from "axios";
 import { login_page } from "../components/login"
 import { useRouter } from "next/router";
 import { unauthorized_access } from "../components/unauthorized_access";
+import Lenis from '@studio-freight/lenis'
 
 const Stats = ({ title, body }) => {
   return (
@@ -102,7 +103,14 @@ export default function Home(props) {
   } else if (logged_in==false) {
       return login_page(registration_state,setRegistration_State,session,props.apiurl)
   }
-    return (
+  const lenis = new Lenis()
+  function raf(time) {
+      lenis.raf(time)
+      requestAnimationFrame(raf)
+  }
+  
+  requestAnimationFrame(raf)
+  return (
         <div className="hidden">
             <Head>
                 <title></title>
@@ -132,7 +140,7 @@ export default function Home(props) {
                 <div style={{width:"70vw"}}>
                 <Row css={{width:"150%"}} className="nomargin">
                 <Text h1 css={{float:"left",width:"50%"}}>Welcome {session.user.name.split(" ")[0]}</Text>
-                <Text h1 css={{float:"left",width:"50%"}}>Balance: ${logged_in.balance}</Text>
+                <Text h1 css={{float:"left",width:"65%"}}>Bank's Balance: ${logged_in.balance}</Text>
                 </Row>
                 <Input placeholder="Search Loan" onChange={(x)=>{
                     setSearch(x.target.value.replaceAll(" ","").toLowerCase())
@@ -143,7 +151,7 @@ export default function Home(props) {
                   <Spacer />
                   <Stats title="Loans Pending" body={"$"+`${stats.pending}`} />
                   <Spacer />
-                  <Stats title="Money Left" body={"$"+`${logged_in.balance}`} />
+                  <Stats title="Bank Reserve" body={"$"+`${logged_in.balance}`} />
                 </Row>
                 <Spacer y></Spacer>
                 <Table
