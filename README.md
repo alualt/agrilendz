@@ -72,7 +72,7 @@ Now paste these details inside the secret.json JSON file.
 
 Create a [Free Tier MongoDB](https://www.mongodb.com/cloud/atlas/register) account.
 
-Once you have created an account. Create an organisation in the MongoDB Atlas Dashboard.
+Once you have created an account, create an organisation in the MongoDB Atlas Dashboard.
 
 Create a [Free Database Using MongoDB Atlas](https://www.mongodb.com/basics/create-database)
 
