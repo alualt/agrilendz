@@ -18,7 +18,7 @@ Let's cultivate success together!
 
 
 # Basic Installation
-**Make sure to install NodeJs and Python before proceeding**
+**Make sure to install NodeJs and Python (3.9) before proceeding**
 
 Cloning the repository
 ```bash
