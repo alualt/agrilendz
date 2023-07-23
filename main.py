@@ -66,6 +66,18 @@ def call_func(name,args=[]):
                 continue
             else:
                 raise e
+    while True:
+        try:
+            w3.eth.wait_for_transaction_receipt(tx_hash)
+            break
+        except Exception as e:
+            if web3.exceptions.TimeExhausted==type(e):
+                return
+            elif requests.exceptions.HTTPError==e:
+                time.sleep(1)
+                continue
+            else:
+                raise e
     return tx_hash
 
 def local_call(name,args=[]):
