@@ -263,7 +263,7 @@ def rate():
         args["rating"]=5
     elif args["rating"]<0:
         args["rating"]=0
-    call_func("add_rating",[args["id"],])
+    call_func("add_rating",[args["id"],args["rating"]])
     farmer_stats=local_call("get_farmer",[args["id"]])
     farmer_stats={
         "name":farmer_stats[0],
