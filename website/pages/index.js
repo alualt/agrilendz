@@ -141,7 +141,7 @@ export default function Home(props) {
             </Navbar>
             <Spacer y={5}></Spacer>
             <div className="wrapper">
-                <div style={{width:"70vw"}}>
+                <div style={{width:"1400px"}}>
                 <Row css={{width:"100%"}} className="nomargin">
                 <Text h1 css={{float:"left",width:"50%"}}>Welcome {session.user.name.split(" ")[0]}</Text>
 
