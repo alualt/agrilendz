@@ -125,7 +125,6 @@ python3 reset.py
 - **Kritarth Shankar** [@kody-k](https://github.com/kody-k)
 
 
-## Feedback
+## Feedback and Queries
 
-If you have any feedback, please reach out to us at aarav@dayal.org
-
+If you have any feedback, please reach out to us at aarav@dayal.org or @aludayalu on Discord
