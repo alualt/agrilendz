@@ -52,7 +52,7 @@ Now open the secret.json file in a code editor and paste the following json in i
 
 ## Obtaining PrivateKey and PublicAddress
 ### Setting up MetaMask for MoonBase - Alpha Testnet
-[MoonBase setup and Faucet](https://docs.moonbeam.network/builders/get-started/networks/moonbase/#connect-metamask)
+[MoonBase setup and getting a few DEV tokens via the Faucet](https://docs.moonbeam.network/builders/get-started/networks/moonbase/#connect-metamask)
 
 [Extracting Private Key](https://support.metamask.io/hc/en-us/articles/360015289632-How-to-export-an-account-s-private-key)
 
