@@ -18,6 +18,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { login_page } from "../components/login"
 import { useRouter } from "next/router";
+import { unauthorized_access } from "../components/unauthorized_access";
 
 const Stats = ({ title, body }) => {
   return (
@@ -34,6 +35,7 @@ export default function Home(props) {
     const { data: session } = useSession()
     const [visible, setVisible] = React.useState(false);
     const [loans,setLoans]=useState([])
+    const [stats,setStats]=useState({"pending":0,"lent":0})
     const [first_load,setFirstLoad]=useState(true)
     const closeHandler = () => {
         if (!is_uploading) {
@@ -75,6 +77,10 @@ export default function Home(props) {
             console.log(x.data)
             setLoans(x.data)
         })
+        axios.get(props.apiurl+"/bank_stats").then((x)=>{
+          console.log(x.data)
+          setStats(x.data)
+      })
     }
     if (first_load) {
         setFirstLoad(false)
@@ -84,14 +90,20 @@ export default function Home(props) {
         })
     }
     if (logged_in=="loading") {
-        return <div className="div_center" style={{top:"45%"}}>
-                    <Loading css={{scale:2.5}}></Loading>
-                </div>
-    } else if (logged_in==false) {
-        return login_page(registration_state,setRegistration_State,session,props.apiurl)
-    }
+      return <div className="div_center" style={{top:"45%"}}>
+                  <div>
+                  <Text h1 css={{textGradient: "45deg, #17C964 -20%, $green800 50%"}}>AgriLendz</Text>
+                  </div>
+                  <Spacer></Spacer>
+                  <div className="wrapper">
+                  <Loading></Loading>
+                  </div>
+              </div>
+  } else if (logged_in==false) {
+      return login_page(registration_state,setRegistration_State,session,props.apiurl)
+  }
     return (
-        <>
+        <div className="hidden">
             <Head>
                 <title></title>
             </Head>
@@ -101,7 +113,15 @@ export default function Home(props) {
                     <Text h3 css={{textGradient: "45deg, #17C964 -20%, $green800 50%"}}>AgriLendz</Text>
                 </Navbar.Brand>
                 <Navbar.Content activeColor="primary">
-                <Navbar.Link isActive href="/">Home</Navbar.Link>
+                <Navbar.Link onClick={()=>{
+                  router.push("/")
+                }}>Govt. Agents</Navbar.Link>
+                <Navbar.Link isActive onClick={()=>{
+                  router.push("/bank")
+                }}>Bank</Navbar.Link>
+                <Navbar.Link onClick={()=>{
+                  router.push("/wholesaler")
+                }}>Wholesaler</Navbar.Link>
                 </Navbar.Content>
             </Navbar>
             <Spacer y={5}></Spacer>
@@ -116,11 +136,11 @@ export default function Home(props) {
                 }} width={250+70}></Input>
                 <Spacer y></Spacer>
                 <Row>
-                  <Stats title="Money Lent" body="$96M" />
+                  <Stats title="Money Lent" body={"$"+`${stats.lent}`} />
                   <Spacer />
-                  <Stats title="Loans Pending" body="$69M" />
+                  <Stats title="Loans Pending" body={"$"+`${stats.pending}`} />
                   <Spacer />
-                  <Stats title="Money Left" body="$696M" />
+                  <Stats title="Money Left" body={"$"+`${logged_in.balance}`} />
                 </Row>
                 <Spacer y></Spacer>
                 <Table
@@ -246,7 +266,7 @@ export default function Home(props) {
                 </Button>
                 </Modal.Footer>
             </Modal>
-        </> 
+        </div> 
     )
 }
 

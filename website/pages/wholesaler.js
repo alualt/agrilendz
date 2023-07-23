@@ -10,13 +10,15 @@ Row,
 Input,
 Table,
 Modal,
-Loading
+Loading,
+Card
 } from "@nextui-org/react";
 import { useSession, signIn, signOut } from "next-auth/react"
 import React, { useState } from "react";
 import axios from "axios";
 import { login_page } from "../components/login"
 import { useRouter } from "next/router";
+import { unauthorized_access } from "../components/unauthorized_access";
 
 export default function Home(props) {
     const [registration_state,setRegistration_State]=useState({"agent":false,"wholesaler":false,"bank":false})
@@ -74,13 +76,22 @@ export default function Home(props) {
     }
     if (logged_in=="loading") {
         return <div className="div_center" style={{top:"45%"}}>
-                    <Loading css={{scale:2.5}}></Loading>
+                    <div>
+                    <Text h1 css={{textGradient: "45deg, #17C964 -20%, $green800 50%"}}>AgriLendz</Text>
+                    </div>
+                    <Spacer></Spacer>
+                    <div className="wrapper">
+                    <Loading></Loading>
+                    </div>
                 </div>
     } else if (logged_in==false) {
         return login_page(registration_state,setRegistration_State,session,props.apiurl)
     }
+    if (!logged_in.wholesaler) {
+        return unauthorized_access()
+    }
     return (
-        <>
+        <div className="hidden">
             <Head>
                 <title></title>
             </Head>
@@ -90,7 +101,15 @@ export default function Home(props) {
                     <Text h3 css={{textGradient: "45deg, #17C964 -20%, $green800 50%"}}>AgriLendz</Text>
                 </Navbar.Brand>
                 <Navbar.Content activeColor="primary">
-                <Navbar.Link isActive href="/">Home</Navbar.Link>
+                <Navbar.Link onClick={()=>{
+                    router.push("/")
+                    }}>Govt. Agents</Navbar.Link>
+                    <Navbar.Link onClick={()=>{
+                    router.push("/bank")
+                    }}>Bank</Navbar.Link>
+                    <Navbar.Link isActive onClick={()=>{
+                    router.push("/wholesaler")
+                    }}>Wholesaler</Navbar.Link>
                 </Navbar.Content>
             </Navbar>
             <Spacer y={5}></Spacer>
@@ -213,7 +232,7 @@ export default function Home(props) {
                 </Button>
                 </Modal.Footer>
             </Modal>
-        </> 
+        </div> 
     )
 }
 

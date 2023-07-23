@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "D:\\polka_projects\\contracts\\contracts\\Box.sol": {
-      "lastModificationDate": 1690067794084,
-      "contentHash": "800651515427268f777d51e1e8323c8a",
+      "lastModificationDate": 1690070649611,
+      "contentHash": "d5c63e1f895f6f954023a4d78e2789ab",
       "sourceName": "contracts/Box.sol",
       "solcConfig": {
         "version": "0.8.1",

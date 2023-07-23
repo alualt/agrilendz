@@ -91,7 +91,13 @@ export default function Home(props) {
     }
     if (logged_in=="loading") {
         return <div className="div_center" style={{top:"45%"}}>
-                    <Loading css={{scale:2.5}}></Loading>
+                    <div>
+                    <Text h1 css={{textGradient: "45deg, #17C964 -20%, $green800 50%"}}>AgriLendz</Text>
+                    </div>
+                    <Spacer></Spacer>
+                    <div className="wrapper">
+                    <Loading></Loading>
+                    </div>
                 </div>
     } else if (logged_in==false) {
         return login_page(registration_state,setRegistration_State,session,props.apiurl)
@@ -101,7 +107,7 @@ export default function Home(props) {
         return unauthorized_access()
     }
     return (
-        <>
+        <div className="hidden">
             <Head>
                 <title></title>
             </Head>
@@ -111,7 +117,15 @@ export default function Home(props) {
                     <Text h3 css={{textGradient: "45deg, #17C964 -20%, $green800 50%"}}>AgriLendz</Text>
                 </Navbar.Brand>
                 <Navbar.Content activeColor="primary">
-                <Navbar.Link isActive href="/">Home</Navbar.Link>
+                <Navbar.Link isActive onClick={()=>{
+                    router.push("/")
+                    }}>Govt. Agents</Navbar.Link>
+                    <Navbar.Link onClick={()=>{
+                    router.push("/bank")
+                    }}>Bank</Navbar.Link>
+                    <Navbar.Link onClick={()=>{
+                    router.push("/wholesaler")
+                    }}>Wholesaler</Navbar.Link>
                 </Navbar.Content>
             </Navbar>
             <Spacer y={5}></Spacer>
@@ -272,7 +286,7 @@ export default function Home(props) {
                     document.getElementById("quality_submit_button").style.display="block"
                     document.getElementById("close_modal_2").style.display="block"
                     setIs_Uploading(false)
-                    setVisible2(false)
+                    setVisible4(false)
                 }
                 }>
                     Submit
@@ -360,7 +374,7 @@ export default function Home(props) {
                 </Button>
                 </Modal.Footer>
             </Modal>
-        </> 
+        </div> 
     )
 }
 

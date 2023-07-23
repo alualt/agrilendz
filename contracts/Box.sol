@@ -136,10 +136,6 @@ contract Box {
         }
     }
 
-    function get_farmer_trades(string memory farmer_id) public view returns (Trade[] memory) {
-        return farmer_trades[farmer_id];
-    }
-
     function get_farmer(string memory farmer_id) public view returns (Farmer_Stat memory) {
         Farmer memory current_farmer=farmers[farmer_id];
         Farmer_Stat memory current_stat=Farmer_Stat(current_farmer.name,current_farmer.farmer_id,current_farmer.number,current_farmer.region,current_farmer.index,aqis[current_farmer.farmer_id],order_sizes[current_farmer.farmer_id],all_order_volumes[current_farmer.farmer_id],ratings[current_farmer.farmer_id],farmer_trades[current_farmer.farmer_id],farmer_loans[farmer_id]);
@@ -217,6 +213,10 @@ contract Box {
 
     function get_loan(uint id) public view returns (Loan memory) {
         return all_loans[id];
+    }
+
+    function get_all_loans() public view returns (Loan[] memory) {
+        return all_loans;
     }
 
 }

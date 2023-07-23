@@ -1,5 +1,5 @@
 from web3 import providers,Web3
-import os,json,time,flask,web3,threading,litedb
+import os,json,time,flask,web3,threading,litedb,requests
 from flask import Flask,request
 
 secret=json.loads(open("secret.json").read())
@@ -45,7 +45,13 @@ def call_func(name,args=[]):
     )
 """
     new_locals,new_globals={}|globals()|locals(),{}|globals()|locals()
-    exec(statement,new_globals,new_locals)
+    while True:
+        try:
+            exec(statement,new_globals,new_locals)
+            break
+        except requests.exceptions.HTTPError:
+            time.sleep(1)
+            continue
     call_function=new_locals["call_function"]
     tx_create = w3.eth.account.sign_transaction(call_function, private_key)
     tx_hash = w3.eth.send_raw_transaction(tx_create.rawTransaction)
@@ -394,3 +400,14 @@ def settle_loan():
         }
     threading.Thread(target=send_message,args=(farmer_stats["number"],f"Congratulation {farmer_stats['name']}! You have settled your Loan of ${amount} successfully!\nLoan ID: {args['id']}\nCurrent Balance: ${farmer_stats['balance']}")).start()
     return make_response(True)
+
+@app.get("/bank_stats")
+def bank_stats():
+    lent=0
+    pending=0
+    loans=[sort_loan(x) for x in local_call("get_all_loans")]
+    for x in loans:
+        lent+=x["amount"]
+        if x["paid"]==False:
+            pending+=x["amount"]
+    return make_response({"pending":pending,"lent":lent})
