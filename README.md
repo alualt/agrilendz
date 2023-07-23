@@ -101,7 +101,7 @@ Now copy the Box deployed to address and paste it in the contract_hash file in t
 
 ### Terminal 2
 ```bash
-python3 -m flask --app main run --port 80
+flask --app main run --port 80
 ```
 
 ### Terminal 3
