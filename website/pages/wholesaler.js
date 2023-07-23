@@ -110,6 +110,9 @@ export default function Home(props) {
                     <Navbar.Link isActive onClick={()=>{
                     router.push("/wholesaler")
                     }}>Wholesaler</Navbar.Link>
+                    <Navbar.Link onClick={()=>{
+                    signOut()
+                    }}>Logout</Navbar.Link>
                 </Navbar.Content>
             </Navbar>
             <Spacer y={5}></Spacer>
